@@ -4,7 +4,6 @@ const cors = require('cors');
 
 const app = express();
 
-app.set('port', 3000);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
@@ -101,6 +100,6 @@ app.use((err, req, res, next) => {
   res.send('500-Server Error');
 });
 
-app.listen(app.get('port'), function () {
+app.listen(app.get(process.env.PORT, function () {
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
