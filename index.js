@@ -4,7 +4,7 @@ const cors = require('cors');
 
 const app = express();
 
-app.set('port', 20003);
+app.set('port', 3000);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors());
@@ -33,7 +33,7 @@ function getAllData(res, next) {
 }
 
 // get current state of the table
-app.get('/', function (req, res, next) {
+app.get('/', (req, res, next) => {
   getAllData(res, next);
 });
 
@@ -53,14 +53,13 @@ app.post('/', (req, res, next) => {
 
 // delete row from the table
 app.delete('/', (req, res, next) => {
-  var context = {};
-  mysql.pool.query(deleteQuery, [req.query.id], (err, result) => {
+  let { id } = req.body;
+  mysql.pool.query(deleteQuery, [id], (err, result) => {
     if (err) {
       next(err);
       return;
     }
-    context.results = "Deleted " + result.changedRows + " rows.";
-    res.send(context);
+    getAllData(res);
   });
 });
 
