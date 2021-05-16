@@ -100,6 +100,6 @@ app.use((err, req, res, next) => {
   res.send('500-Server Error');
 });
 
-app.listen(app.get(process.env.PORT, function () {
+app.listen(3000, function () {
   console.log('Express started on http://localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });

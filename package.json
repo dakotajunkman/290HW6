@@ -8,9 +8,6 @@
     "express": "^4.17.1",
     "mysql": "^2.18.1"
   },
-  "scripts": {
-    "start": "node index.js"
-  },
   "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

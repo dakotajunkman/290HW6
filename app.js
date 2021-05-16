@@ -1,4 +1,4 @@
-const url = 'https://sheltered-cliffs-93447.herokuapp.com/';
+const url = 'http://localhost:3000';
 const table = document.querySelector('#workout');
 const tableHead = ['Name', 'Reps', 'Weight', 'Units', 'Date'];
 const addForm = document.querySelector('#addForm');
