@@ -91,6 +91,7 @@ function makeButton(name, text) {
     return btn;
 }
 
+// gets current state of database
 async function getData() {
     try {
         let data = await fetch(url);
@@ -101,7 +102,8 @@ async function getData() {
     }
 }
 
-async function postReq(data) {
+// sends UPDATE, POST, and DELETE requests to server
+async function sendRequest(data) {
     try {
         const response = await fetch(url, data);
         const rows = await response.json()
@@ -111,34 +113,7 @@ async function postReq(data) {
     }
 }
 
-async function deleteReq(data) {
-    try {
-        const response = await fetch(url, data);
-        const rows = await response.json()
-        makeTable(rows);
-    } catch(err) {
-        console.log(err);
-    }
-}
-
-// makes POST request to add new data to the DB
-addForm.addEventListener('submit', (evt) => {
-    evt.preventDefault();
-    const data = {};
-    const formData = new FormData(addForm);
-    formData.forEach((val, key) => {data[key] = val});
-    const postData = {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    };
-    postReq(postData);
-    const arr = Array.from(addForm.elements);
-    arr.forEach(x => x.value = '');
-});
-
+// gets data from workout table to send to server
 function gatherData(node) {
     let obj = {};
     while (node) {
@@ -151,22 +126,69 @@ function gatherData(node) {
     return obj;
 }
 
-// initiates delete request
-table.addEventListener('click', (evt) => {
+// enables input in the table to update data
+function enableInput(node) {
+    while (node) {
+        let child = node.firstChild;
+        if (child.tagName === 'INPUT') {
+            child.disabled = false;
+        }
+        node = node.previousElementSibling;
+    }
+}
+
+// listener for adding new workout data
+addForm.addEventListener('submit', (evt) => {
     evt.preventDefault();
-    if (!(evt.target.name === 'delete')) return;
-    let node = evt.target.previousElementSibling;
-    let data = gatherData(node);
-    let delData = {
-        method: 'DELETE',
+    const data = {};
+    const formData = new FormData(addForm);
+    formData.forEach((val, key) => {data[key] = val});
+    const postData = {
+        method: 'POST',
         headers: {
-            'Content-Type': 'application/json',
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify(data)
     };
-    deleteReq(delData);
+    sendRequest(postData);
+    const arr = Array.from(addForm.elements);
+    arr.forEach(x => x.value = '');
 });
 
+// listener for update and delete requests
+table.addEventListener('click', (evt) => {
+    evt.preventDefault();
+    if (evt.target.name === 'delete') {
+        let node = evt.target.previousElementSibling;
+        let data = gatherData(node);
+        let delData = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+        sendRequest(delData);
+    } else if (evt.target.name === 'update') {
+        evt.target.name = 'send';
+        evt.target.innerText = 'Send Update';
+        let node = evt.target.previousElementSibling;
+        enableInput(node);
+    } else if (evt.target.name === 'send') {
+        let node = evt.target.previousElementSibling;
+        let data = gatherData(node);
+        let updateData = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+        sendRequest(updateData);
+    }
+});
+
+// runs on page load to get current state of database
 (async () => {
     let data = await getData();
     makeTable(data);

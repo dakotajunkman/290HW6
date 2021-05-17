@@ -10,7 +10,7 @@ app.use(cors());
 
 const getAllQuery = 'SELECT * FROM workout';
 const insertQuery = 'INSERT INTO workout (`name`, `reps`, `weight`, `units`, `date`) VALUES (?, ?, ?, ?, ?)';
-const updateQuery = 'UPDATE workout SET name = ?, reps = ?, weight = ?, units = ?, date = ?, WHERE id = ?';
+const updateQuery = 'UPDATE workout SET name = ?, reps = ?, weight = ?, units = ?, date = ? WHERE id = ?';
 const deleteQuery = 'DELETE FROM workout WHERE id = ?';
 const dropTableQuery = 'DROP TABLE IF EXISTS workout';
 const makeTableQuery = `CREATE TABLE workout(
@@ -46,7 +46,7 @@ app.post('/', (req, res, next) => {
         next(err);
         return;
       }
-      getAllData(res);
+      getAllData(res, next);
     });
 });
 
@@ -58,23 +58,21 @@ app.delete('/', (req, res, next) => {
       next(err);
       return;
     }
-    getAllData(res);
+    getAllData(res, next);
   });
 });
 
-
 // update a row in the table
 app.put('/', (req, res, next) => {
-  var context = {};
+  let { id, name, reps, weight, units, date } = req.body;
   mysql.pool.query(updateQuery,
-    [req.query.name, req.query.reps, req.query.weight, req.query.units],
+    [name, reps, weight, units, date, id],
     (err, result) => {
       if (err) {
         next(err);
         return;
       }
-      context.results = "Updated " + result.changedRows + " rows.";
-      res.send(context);
+      getAllData(res, next);
     });
 });
 
